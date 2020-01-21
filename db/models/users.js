@@ -61,5 +61,18 @@ module.exports = function (sequelize, DataTypes) {
             });
     });
 
+    // create some helper functions to work on the database
+    users.createUser = async ({name, password}) => {
+        return users.create({name, password});
+    };
+    users.getAllUsers = async () => {
+        return users.findAll();
+    };
+    users.getUser = async obj => {
+        return users.findOne({
+            where: obj,
+        });
+    };
+
     return users;
 };

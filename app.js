@@ -2,9 +2,11 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var logger = require('morgan');// import passport and passport-jwt modules
 var passport = require('passport');
+var passportJWT = require('passport-jwt');
 var session = require('express-session');
+var jwt = require('jsonwebtoken');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -29,6 +31,27 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
+// ExtractJwt to help extract the token
+let ExtractJwt = passportJWT.ExtractJwt;
+// JwtStrategy which is the strategy for the authentication
+let JwtStrategy = passportJWT.Strategy;
+let jwtOptions = {};
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+jwtOptions.secretOrKey = "damnmysecretisnotsecret";
+
+// lets create our strategy for web token
+let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
+    console.log('payload received', jwt_payload);
+    let user = getUser({id: jwt_payload.id});
+    if (user) {
+        next(null, user);
+    } else {
+        next(null, false);
+    }
+});
+// use the strategy
+passport.use(strategy);
 
 //Add Passport for Login
 app.use(passport.initialize());
