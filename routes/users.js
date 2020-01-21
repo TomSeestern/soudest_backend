@@ -3,6 +3,10 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+//Für den Login:
+var database = require('../db/db');
+var users = database.sequelizeInstance.import('../db/models/users');
+
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
