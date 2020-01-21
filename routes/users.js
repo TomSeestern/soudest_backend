@@ -20,6 +20,10 @@ passport.deserializeUser(function (user, done) {
 // Passwort Strategie die verwendet werden soll um Nutzer zu Authentifizieren
 // TODO: Add Database call for local Storage of user Data
 
+// get Login Page
+router.get('/login', function (req, res, next) {
+    res.render('login');
+});
 // Login über Post der HTML Form
 router.post('/login', async function (req, res, next) {
     let {email, password} = req.body;
