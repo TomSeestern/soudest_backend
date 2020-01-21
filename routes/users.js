@@ -4,7 +4,7 @@ var passport = require('passport');
 var passportJWT = require('passport-jwt');
 var LocalStrategy = require('passport-local').Strategy;
 var jwt = require('jsonwebtoken');
-
+const bcrypt = require("bcrypt");
 //Für den Login:
 var database = require('../db/db');
 var users = database.sequelizeInstance.import('../db/models/users');
@@ -19,35 +19,24 @@ passport.deserializeUser(function (user, done) {
 
 // Passwort Strategie die verwendet werden soll um Nutzer zu Authentifizieren
 // TODO: Add Database call for local Storage of user Data
-passport.use(new LocalStrategy(
-    function (username, password, done) {
-
-        users.authenticate()
-        /*
-        // Später erfolgt hier ein Datenbank-Call. Hier nun zur Demo nur ein Nutzer:
-        if ((username === "Hans") && (password === "1234")) {
-            // User /Pwd  stimmt
-            return done(null, {name: "Hans", roleAdmin: 1, roleUser: 1});
-        } else {
-            // User / Pwd falsch
-            return done(null, false);
-        }*/
-    }
-));
 
 // Login über Post der HTML Form
 router.post('/login', async function (req, res, next) {
-    const {email, password} = req.body;
+    let {email, password} = req.body;
+
+    //password = await bcrypt.hash(password,10);
+    console.log("PW after Crypt: " + password);
     if (email && password) {
         // we get the user with the name and save the resolved promise
         let user = await users.getUser({email});
         if (!user) {
             res.status(401).json({msg: 'No such user found', user});
         }
-        if (user.password === password) {
+        let match = await bcrypt.compare(password, user.password);
+        if (match) {
             // from now on we’ll identify the user by the id and the id is
             // the only personalized value that goes into our token
-            let payload = {id: user.id};
+            let payload = {id: user.id, firstName: user.firstName};
             let token = jwt.sign(payload, "damnmysecretisnotsecret");
             res.json({msg: 'ok', token: token});
         } else {
