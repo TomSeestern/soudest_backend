@@ -42,9 +42,29 @@ router.post('/login', function (req, res, next) {
     })(req, res, next)
 });
 
+router.get('/signup', function (req, res, next) {
+    res.render('signup');
+});
+
 // TODO: Add Logic for Registering Users
-router.post('/register', function (req, res, next) {
-    res.redirect('/logout');
+router.post('/signup', function (req, res, next) {
+    console.log(req.body);
+    var firstName = req.body.firstName || '';
+    var lastName = req.body.lastName || '';
+    var email = req.body.email || '';
+    var password = req.body.password || '';
+
+    var newUser = users.build({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password
+    });
+
+    newUser.save().catch(function (error) {
+        console.log('Error while inserting: ' + error.stack);
+    });
+    res.json({"info": "Neu angelegt"});
 });
 
 // Logout über Post der /user/logout Route
