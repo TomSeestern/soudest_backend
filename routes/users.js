@@ -4,7 +4,7 @@ var passport = require('passport');
 var passportJWT = require('passport-jwt');
 var LocalStrategy = require('passport-local').Strategy;
 var jwt = require('jsonwebtoken');
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt-nodejs");
 //Für den Login:
 var database = require('../db/db');
 var users = database.sequelizeInstance.import('../db/models/users');
