@@ -26,9 +26,9 @@ router.get('/login', function (req, res, next) {
 });
 // Login über Post der HTML Form
 router.post('/login', async function (req, res, next) {
-    let {email, password} = req.body;
+    let email = req.body.email || '';
+    let password = req.body.password || '';
 
-    //password = await bcrypt.hash(password,10);
     console.log("PW after Crypt: " + password);
     if (email && password) {
         // we get the user with the name and save the resolved promise
@@ -36,16 +36,19 @@ router.post('/login', async function (req, res, next) {
         if (!user) {
             res.status(401).json({msg: 'No such user found', user});
         }
-        let match = await bcrypt.compare(password, user.password);
-        if (match) {
-            // from now on we’ll identify the user by the id and the id is
-            // the only personalized value that goes into our token
-            let payload = {id: user.id, firstName: user.firstName};
-            let token = jwt.sign(payload, "damnmysecretisnotsecret");
-            res.json({msg: 'ok', token: token});
-        } else {
-            res.status(401).json({msg: 'Password is incorrect'});
-        }
+        bcrypt.compare(password, user.password, function (err, match) {
+            if (match) {
+                // from now on we’ll identify the user by the id and the id is
+                // the only personalized value that goes into our token
+                let payload = {id: user.id, firstName: user.firstName};
+                let token = jwt.sign(payload, "damnmysecretisnotsecret");
+                res.cookie('jwt', token, {httpOnly: true, secure: false, maxAge: 3600000});
+                res.redirect('http://localhost:3001/');
+            } else {
+                res.status(401).json({msg: 'Password is incorrect'});
+            }
+        });
+
     }
 });
 
@@ -73,7 +76,7 @@ router.post('/signup', function (req, res, next) {
     });
 
     newUser.save().catch(function (error) {
-        console.log('Error while inserting: ' + error.stack);
+        console.log('Error 8715: While inserting NEW User into DB: ' + error);
     });
     res.json({"info": "Neu angelegt"});
 });

@@ -53,12 +53,22 @@ module.exports = function (sequelize, DataTypes) {
 
     // Method 3 via the direct method
     users.beforeCreate((user, options) => {
-        return bcrypt.hash(user.password, 10).then(hash => {
-            user.password = hash;
-        })
-            .catch(err => {
-                throw new Error();
-            });
+        console.log('Info: ' + 'Storing the Password');
+
+        return new Promise((resolve, reject) => {
+            bcrypt.hash(user.password, bcrypt.genSaltSync(10), null,
+                function (err, hash) {
+                    if (err) {
+                        console.log('Error 8703: Error while Hashing Password:\n ' + err);
+                        reject(err);
+                    } else {
+                        user.password = hash;
+                        return resolve(user, options);
+                    }
+                }
+            )
+        });
+
     });
 
     // create some helper functions to work on the database
