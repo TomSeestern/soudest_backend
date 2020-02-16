@@ -65,6 +65,26 @@ module.exports = function (sequelize, DataTypes) {
                 }
             }
         },
+        startLocId: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            validate: {
+                len: {
+                    args: [0, 100],
+                    msg: 'StartTime to high'
+                }
+            }
+        },
+        endLocId: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            validate: {
+                len: {
+                    args: [0, 100],
+                    msg: 'StartTime to high'
+                }
+            }
+        },
         path: {
             type: DataTypes.JSON,
             allowNull: false,

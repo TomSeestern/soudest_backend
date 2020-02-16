@@ -9,6 +9,7 @@ var sequelizeInstance = new sequelize('userdb', 'sd_admin', 'sd_admin,,sd_admin'
 // Initialize models
 var users = sequelizeInstance.import('./models/users');
 var edges = sequelizeInstance.import('./models/edges');
+var locations = sequelizeInstance.import('./models/locations');
 
 // Relations 1:n
 // Player bekommt eine teamId
