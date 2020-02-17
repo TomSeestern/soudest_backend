@@ -11,6 +11,9 @@ var jwt = require('jsonwebtoken');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var infoRouter = require('./routes/info');
+var routeRouter = require('./routes/routes');
+
+var cors = require('cors');
 
 var app = express();
 
@@ -23,6 +26,20 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Allow Web-request from "Other" Websites in the whitelist
+let whitelist = ['http://localhost:3000', 'http://localhost:3001'];
+let corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+};
+
+app.use(cors(corsOptions));
 
 // Cookies erlauben
 app.use(session({
@@ -60,6 +77,7 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/info', infoRouter);
+app.use('/route', routeRouter);
 
 app.post('');
 

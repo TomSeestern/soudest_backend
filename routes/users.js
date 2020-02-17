@@ -42,7 +42,7 @@ router.post('/login', async function (req, res, next) {
                 // the only personalized value that goes into our token
                 let payload = {id: user.id, firstName: user.firstName};
                 let token = jwt.sign(payload, "damnmysecretisnotsecret");
-                res.cookie('jwt', token, {httpOnly: true, secure: false, maxAge: 3600000});
+                res.cookie('jwt', token, {httpOnly: false, secure: false, session: true, maxAge: 3600000 * 60});
                 res.redirect('http://localhost:3001/');
             } else {
                 res.status(401).json({msg: 'Password is incorrect'});
