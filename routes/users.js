@@ -115,7 +115,7 @@ router.get('/:userId', function (req, res, next) {
     //res.json({"info": "User deleted"});
 });
 
-router.delete('/:userId', function (req, res, next) {
+router.delete('/delete/:userId', function (req, res, next) {
     var userId = req.params.userId || -1;
     if (userId <= -1) {
         res.send("invalid id");
