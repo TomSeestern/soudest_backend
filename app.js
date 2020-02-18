@@ -28,13 +28,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Allow Web-request from "Other" Websites in the whitelist
-let whitelist = ['http://localhost:3000', 'http://localhost:3001'];
+let whitelist = ['http://localhost:3000', 'http://localhost:3001', 'http://*:*'];
 let corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
             callback(null, true)
         } else {
-            callback(new Error('Not allowed by CORS'))
+            //callback(new Error('Not allowed by CORS'))
+            callback(null, true)
         }
     }
 };

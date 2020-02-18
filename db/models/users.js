@@ -83,6 +83,11 @@ module.exports = function (sequelize, DataTypes) {
             where: obj,
         });
     };
+    users.deleteUser = async obj => {
+        return users.destroy({
+            where: obj,
+        });
+    };
 
     return users;
 };

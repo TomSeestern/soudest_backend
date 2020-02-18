@@ -81,6 +81,50 @@ router.post('/signup', function (req, res, next) {
     res.json({"info": "Neu angelegt"});
 });
 
+// Updates a exsiting User with new Data
+router.put('/update', function (req, res, next) {
+    console.log(req.body);
+    var firstName = req.body.firstName || '';
+    var lastName = req.body.lastName || '';
+    var email = req.body.email || '';
+
+    var updatedUser = users.update({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password
+    });
+
+    updatedUser.update().catch(function (error) {
+        console.log('Error 8716: While updating existing User into DB: ' + error);
+    });
+    res.json({"info": "User Updated"});
+});
+
+router.get('/:userId', function (req, res, next) {
+    var userId = req.params.userId || -1;
+    if (userId <= -1) {
+        res.send("invalid id");
+    }
+
+    users.getUser({id: userId}).then(user => res.json(user)).catch(function (error) {
+        console.log('Error 8717: While recieving existing User from DB: ' + error);
+    });
+    //res.json({"info": "User deleted"});
+});
+
+router.delete('/:userId', function (req, res, next) {
+    var userId = req.params.userId || -1;
+    if (userId <= -1) {
+        res.send("invalid id");
+    }
+
+    users.deleteUser({id: userId}).catch(function (error) {
+        console.log('Error 8718: While deleting existing User from DB: ' + error);
+    });
+    res.json({"info": "User deleted"});
+});
+
 // Logout über Post der /user/logout Route
 router.get('/logout', function (req, res, next) {
     req.logout();
