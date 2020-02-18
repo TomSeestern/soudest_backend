@@ -4,6 +4,7 @@ var passport = require('passport');
 var passportJWT = require('passport-jwt');
 var LocalStrategy = require('passport-local').Strategy;
 var jwt = require('jsonwebtoken');
+var util = require('util');
 const bcrypt = require("bcrypt-nodejs");
 //Für den Login:
 var database = require('../db/db');
@@ -83,22 +84,23 @@ router.post('/signup', function (req, res, next) {
 
 // Updates a exsiting User with new Data
 router.put('/update', function (req, res, next) {
-    console.log(req.body);
+    console.log("INFO: Update Request recieved: " + util.inspect(req.body, false, null, true));
+    var myid = req.body.myid || '';
     var firstName = req.body.firstName || '';
     var lastName = req.body.lastName || '';
     var email = req.body.email || '';
 
-    var updatedUser = users.update({
+    users.update({
+        id: myid,
         firstName: firstName,
         lastName: lastName,
         email: email,
-        password: password
-    });
-
-    updatedUser.update().catch(function (error) {
+    }, {
+        where: {id: myid}
+    }).catch(function (error) {
         console.log('Error 8716: While updating existing User into DB: ' + error);
     });
-    res.json({"info": "User Updated"});
+    res.redirect('http://localhost:3001/');
 });
 
 router.get('/:userId', function (req, res, next) {
