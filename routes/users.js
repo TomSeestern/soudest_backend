@@ -23,7 +23,7 @@ passport.deserializeUser(function (user, done) {
 
 // get Login Page
 router.get('/login', function (req, res, next) {
-    res.render('login');
+    res.redirect('http://localhost:3001/#/SignIn');
 });
 // Login über Post der HTML Form
 router.post('/login', async function (req, res, next) {
@@ -44,7 +44,7 @@ router.post('/login', async function (req, res, next) {
                 let payload = {id: user.id, firstName: user.firstName};
                 let token = jwt.sign(payload, "damnmysecretisnotsecret");
                 res.cookie('jwt', token, {httpOnly: false, secure: false, session: true, maxAge: 3600000 * 60});
-                res.redirect('http://localhost:3001/');
+                res.redirect('http://localhost:3001/#/SignIn');
             } else {
                 res.status(401).json({msg: 'Password is incorrect'});
             }
@@ -54,11 +54,11 @@ router.post('/login', async function (req, res, next) {
 });
 
 router.get('/users', function (req, res) {
-    users.getAllUsers().then(user => res.json(user));
+    res.redirect('http://localhost:3001/#/Error?e=404');
 });
 
 router.get('/signup', function (req, res, next) {
-    res.render('signup');
+    res.redirect('http://localhost:3001/#/SignUp');
 });
 
 // TODO: Add Logic for Registering Users
@@ -79,7 +79,7 @@ router.post('/signup', function (req, res, next) {
     newUser.save().catch(function (error) {
         console.log('Error 8715: While inserting NEW User into DB: ' + error);
     });
-    res.json({"info": "Neu angelegt"});
+    res.redirect('http://localhost:3001/#/SignIn');
 });
 
 // Updates a exsiting User with new Data
@@ -100,12 +100,12 @@ router.put('/update', function (req, res, next) {
     }).catch(function (error) {
         console.log('Error 8716: While updating existing User into DB: ' + error);
     });
-    res.redirect('http://localhost:3001/');
+    res.redirect('http://localhost:3001/#/Profile');
 });
 
 router.get('/:userId', function (req, res, next) {
     var userId = req.params.userId || -1;
-    if (userId <= -1) {
+    if (userId <= -1 || userId === 'undefined' || userId === '') {
         res.send("invalid id");
     }
 
@@ -124,14 +124,14 @@ router.delete('/delete/:userId', function (req, res, next) {
     users.deleteUser({id: userId}).catch(function (error) {
         console.log('Error 8718: While deleting existing User from DB: ' + error);
     });
-    res.json({"info": "User deleted"});
+    res.redirect('http://localhost:3001/#/SignIn');
 });
 
 // Logout über Post der /user/logout Route
 router.get('/logout', function (req, res, next) {
     req.logout();
     req.session.destroy();
-    res.redirect('/login');
+    res.redirect('http://localhost:3001/#/SignIn');
 });
 
 // protected route
@@ -141,7 +141,7 @@ router.get('/protected', passport.authenticate('jwt', {session: false}), functio
 
 // get Login Page
 router.get('/', function (req, res, next) {
-    res.render('login');
+    res.redirect('http://localhost:3001/#/');
 });
 
 module.exports = router;
